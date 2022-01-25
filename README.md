@@ -17,3 +17,9 @@ Guided project for **Node Auth 1** Module.
 - [ ] type `npm run server` to start the API.
 
 Please follow along as the instructor adds authentication to the API.
+
+
+
+```
+http://localhost:9000/api/register?username=foo&password=bar
+```
