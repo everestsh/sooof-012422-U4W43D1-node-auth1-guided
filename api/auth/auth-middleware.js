@@ -1,9 +1,14 @@
 
 const Users = require('../users/users-model')
 
-function restrict (req, res, next){
-    console.log("restrict middleware")
-    next()
+function restricted (req, res, next){
+    // console.log("restrict middleware")
+    // next()
+    if(req.session.user == null) {
+        next({ status: 401, message: 'this endpoint is restricted!' });
+    } else {
+        next();
+    }
 }
 // function validateUser (req, res, next){
 //     // console.log("validateUser middleware")
@@ -54,10 +59,18 @@ async function usernameExists(req, res, next) {
         next();
     }
 }
+function restrictedAdmin(req, res, next) {
+    if(req.session.isAdmin != true) {
+        next({ status: 401, message: 'this endpoint is restricted!' });
+    } else {
+        next();
+    }
+}
 
 module.exports = {
-    restrict,
+    restricted,
     validateUser,
     usernameIsUnique,
     usernameExists,
+    restrictedAdmin,
 }

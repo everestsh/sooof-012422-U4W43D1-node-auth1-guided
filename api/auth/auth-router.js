@@ -34,13 +34,22 @@ router.post('/register', validateUser, usernameIsUnique,  async (req, res, next)
 });
 
 // http post :9000/api/auth/login username=aaa password=1234 -v
-router.post('/login', validateUser, usernameExists, async(req, res, next) => {
-    // res.json('login')
+// router.post('/login', validateUser, usernameExists, async(req, res, next) => {
+//     // res.json('login')
+//     const password = req.body.password;
+//     // console.log("data password", req.user.password)
+//     // console.log("body password = ", password)
+//     // console.log(bcrypt.compareSync(password, req.user.password))
+//     if( bcrypt.compareSync(password, req.user.password) == true) {
+//         res.json(`Welcome back, ${req.user.username}!`);
+//     } else {
+//         next({ status: 401, message: 'invalid credentials provided!' });
+//     }
+// });
+router.post('/login', validateUser, usernameExists, (req, res, next) => {
     const password = req.body.password;
-    // console.log("data password", req.user.password)
-    // console.log("body password = ", password)
-    // console.log(bcrypt.compareSync(password, req.user.password))
-    if( bcrypt.compareSync(password, req.user.password) == true) {
+    if(bcrypt.compareSync(password, req.user.password) == true) {
+        req.session.user = req.user;
         res.json(`Welcome back, ${req.user.username}!`);
     } else {
         next({ status: 401, message: 'invalid credentials provided!' });
@@ -48,7 +57,18 @@ router.post('/login', validateUser, usernameExists, async(req, res, next) => {
 });
 
 router.get('/logout', (req, res, next) => {
-    res.json('logout')
+    // res.json('logout')
+    if(req.session) {
+        req.session.destroy(err => {
+            if (err != null) {
+                next({ message: 'error while logging out' });
+            } else {
+                res.json('logged out');
+            }
+        });
+    } else {
+        req.end();
+    }
 });
 
 module.exports = router;
